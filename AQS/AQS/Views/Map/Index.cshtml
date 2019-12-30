@@ -1,0 +1,70 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenLayers</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/css/ol.css" type="text/css">
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-family: "Microsoft YaHei";
+        }
+
+        .map {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/build/ol.js"></script>
+</head>
+<body>
+    <div id="map" class="map"></div>
+    <script type="text/javascript">
+        //var center = [113.269611, 23.096889];
+        var center = [106.240337, 37.156353];
+        //var projection = ol.proj.get('EPSG:4326');
+        //var imageExtent = [60.42, 10.01, 152.48, 57.35];
+        var projection = ol.proj.get('EPSG:3857');
+        var imageExtent = [];
+        var a = ol.proj.fromLonLat([60.42, 10.01]);
+        var b = ol.proj.fromLonLat([152.48, 57.35]);
+        imageExtent[0] = a[0];
+        imageExtent[1] = a[1];
+        imageExtent[2] = b[0];
+        imageExtent[3] = b[1];
+
+        var imageLayer = new ol.layer.Image({
+            source: new ol.source.ImageStatic({
+                url: 'https://graph.zq12369.cn/AQI/hour/CUACE_09km_AQI_station_2019-12-30%2023:00:00.png',
+                projection: projection,
+                imageExtent: imageExtent
+            }),
+            opacity: 0.7
+        });
+        var map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+                imageLayer
+            ],
+            view: new ol.View({
+                //projection: ol.proj.get('EPSG:4326'),
+                //center: center,
+                projection: ol.proj.get('EPSG:3857'),
+                center: ol.proj.fromLonLat(center),
+                zoom: 5
+            })
+        });
+    </script>
+</body>
+</html>
