@@ -166,6 +166,7 @@
     <Content Include="Views\Map\Index.cshtml" />
     <Content Include="Views\Map\CUACE.cshtml" />
     <Content Include="Views\Map\CustomControls.cshtml" />
+    <Content Include="Views\Map\WMTSTianDiTu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

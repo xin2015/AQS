@@ -23,6 +23,17 @@ namespace AQS.Controllers
         {
             return View();
         }
+
+        public ActionResult WMTSTianDiTu()
+        {
+            return View();
+        }
+        #endregion
+        #region TianDiTu
+        public ActionResult TianDiTu()
+        {
+            return View();
+        }
         #endregion
     }
 }

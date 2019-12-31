@@ -1,0 +1,172 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenLayers</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/css/ol.css" type="text/css">
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-family: "Microsoft YaHei";
+        }
+
+        .map {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/build/ol.js"></script>
+</head>
+<body>
+    <div id="map" class="map"></div>
+    <script type="text/javascript">
+        var center = [106.45, 33.68];
+        var projection = ol.proj.get('EPSG:3857');
+        var projectionExtent = projection.getExtent();
+        var size = ol.extent.getWidth(projectionExtent) / 256;
+        var maxZoom = 20;
+        var resolutions = new Array(maxZoom);
+        var matrixIds = new Array(maxZoom);
+        for (var z = 0; z < maxZoom; z++) {
+            // generate resolutions and matrixIds arrays for this WMTS
+            resolutions[z] = size / Math.pow(2, z);
+            matrixIds[z] = z;
+        }
+
+        var map = new ol.Map({
+            target: 'map',
+            controls: ol.control.defaults({
+                attributionOptions: {
+                    collapsible: false
+                }
+            }),
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.WMTS({
+                        name: "天地图全国矢量电子地图底图",
+                        url: "http://t0.tianditu.gov.cn/vec_w/wmts?tk=fdcab2d88e293c189daf038cd01592e6",
+                        layer: "vec",
+                        style: "default",
+                        matrixSet: "w",
+                        format: "tiles",
+                        wrapX: true,
+                        tileGrid: new ol.tilegrid.WMTS({
+                            origin: ol.extent.getTopLeft(projectionExtent),
+                            resolutions: resolutions.slice(1, 19),
+                            matrixIds: matrixIds.slice(1, 19)
+                        })
+                    })
+                }),
+                new ol.layer.Tile({
+                    source: new ol.source.WMTS({
+                        name: "天地图全国矢量电子地图注记",
+                        url: "http://t0.tianditu.gov.cn/cva_w/wmts?tk=fdcab2d88e293c189daf038cd01592e6",
+                        layer: "cva",
+                        style: "default",
+                        matrixSet: "w",
+                        format: "tiles",
+                        wrapX: true,
+                        tileGrid: new ol.tilegrid.WMTS({
+                            origin: ol.extent.getTopLeft(projectionExtent),
+                            resolutions: resolutions.slice(1, 19),
+                            matrixIds: matrixIds.slice(1, 19)
+                        })
+                    })
+                })
+                //new ol.layer.Tile({
+                //    source: new ol.source.WMTS({
+                //        name: "天地图全国影像电子地图底图",
+                //        url: "http://t0.tianditu.gov.cn/img_w/wmts?tk=fdcab2d88e293c189daf038cd01592e6",
+                //        layer: "img",
+                //        style: "default",
+                //        matrixSet: "w",
+                //        format: "tiles",
+                //        wrapX: true,
+                //        tileGrid: new ol.tilegrid.WMTS({
+                //            origin: ol.extent.getTopLeft(projectionExtent),
+                //            resolutions: resolutions.slice(1, 19),
+                //            matrixIds: matrixIds.slice(1, 19)
+                //        })
+                //    })
+                //}),
+                //new ol.layer.Tile({
+                //    source: new ol.source.WMTS({
+                //        name: "天地图全国影像电子地图注记",
+                //        url: "http://t0.tianditu.gov.cn/cia_w/wmts?tk=fdcab2d88e293c189daf038cd01592e6",
+                //        layer: "cia",
+                //        style: "default",
+                //        matrixSet: "w",
+                //        format: "tiles",
+                //        wrapX: true,
+                //        tileGrid: new ol.tilegrid.WMTS({
+                //            origin: ol.extent.getTopLeft(projectionExtent),
+                //            resolutions: resolutions.slice(1, 19),
+                //            matrixIds: matrixIds.slice(1, 19)
+                //        })
+                //    })
+                //}),
+                //new ol.layer.Tile({
+                //    source: new ol.source.WMTS({
+                //        name: "天地图全国地形电子地图渲染",
+                //        url: "http://t0.tianditu.gov.cn/ter_w/wmts?tk=fdcab2d88e293c189daf038cd01592e6",
+                //        layer: "ter",
+                //        style: "default",
+                //        matrixSet: "w",
+                //        format: "tiles",
+                //        wrapX: true,
+                //        tileGrid: new ol.tilegrid.WMTS({
+                //            origin: ol.extent.getTopLeft(projectionExtent),
+                //            resolutions: resolutions.slice(1, 19),
+                //            matrixIds: matrixIds.slice(1, 19)
+                //        })
+                //    })
+                //}),
+                //new ol.layer.Tile({
+                //    source: new ol.source.WMTS({
+                //        name: "天地图全国地形电子地图注记",
+                //        url: "http://t0.tianditu.gov.cn/cta_w/wmts?tk=fdcab2d88e293c189daf038cd01592e6",
+                //        layer: "cta",
+                //        style: "default",
+                //        matrixSet: "w",
+                //        format: "tiles",
+                //        wrapX: true,
+                //        tileGrid: new ol.tilegrid.WMTS({
+                //            origin: ol.extent.getTopLeft(projectionExtent),
+                //            resolutions: resolutions.slice(1, 19),
+                //            matrixIds: matrixIds.slice(1, 19)
+                //        })
+                //    })
+                //}),
+                //new ol.layer.Tile({
+                //    source: new ol.source.WMTS({
+                //        name: "天地图全国电子地图境界",
+                //        url: "http://t0.tianditu.gov.cn/ibo_w/wmts?tk=fdcab2d88e293c189daf038cd01592e6",
+                //        layer: "ibo",
+                //        style: "default",
+                //        matrixSet: "w",
+                //        format: "tiles",
+                //        wrapX: true,
+                //        tileGrid: new ol.tilegrid.WMTS({
+                //            origin: ol.extent.getTopLeft(projectionExtent),
+                //            resolutions: resolutions.slice(1, 19),
+                //            matrixIds: matrixIds.slice(1, 19)
+                //        })
+                //    })
+                //})
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat(center),
+                zoom: 4
+            })
+        })
+    </script>
+</body>
+</html>
