@@ -1,0 +1,195 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenLayers</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/css/ol.css" type="text/css">
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-family: "Microsoft YaHei";
+        }
+
+        .map {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/build/ol.js"></script>
+</head>
+<body>
+    <div id="map" class="map"></div>
+    <script type="text/javascript">
+        Date.prototype.format = function (format) {
+            var o = {
+                "M+": this.getMonth() + 1, //month
+                "d+": this.getDate(),    //day
+                "H+": this.getHours(),   //hour
+                "h+": this.getHours(),   //hour
+                "m+": this.getMinutes(), //minute
+                "s+": this.getSeconds(), //second
+                "q+": Math.floor((this.getMonth() + 3) / 3),  //quarter
+                "S": this.getMilliseconds() //millisecond
+            }
+            if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(format))
+                    format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+            return format;
+        }
+
+        String.prototype.format = function () {
+            var str = this.toString();
+            if (!arguments.length)
+                return str;
+            var args = typeof arguments[0],
+                args = (("string" == args || "number" == args) ? arguments : arguments[0]);
+            for (arg in args)
+                str = str.replace(RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
+            return str;
+        }
+    </script>
+    <script type="text/javascript">
+        var center = [106.45, 33.68];
+        var imageExtent = [];
+        var a = ol.proj.fromLonLat([60.42, 10.01]);
+        var b = ol.proj.fromLonLat([152.48, 57.35]);
+        imageExtent[0] = a[0];
+        imageExtent[1] = a[1];
+        imageExtent[2] = b[0];
+        imageExtent[3] = b[1];
+        var items = ["AQI", "PM2.5", "PM10", "SO2", "NO2", "CO", "O3"];
+        var itemIndex = 6;
+        var item = items[itemIndex];
+        var date = new Date();
+        var url = 'https://graph.zq12369.cn/{0}/hour/CUACE_09km_{0}_station_{1}.png'.format(item, date.format("yyyy-MM-dd HH:00:00"));
+        var map;
+        var imageLayer;
+
+        var GraphicControl = (function (Control) {
+            function GraphicControl(opt_options) {
+                var div = document.createElement("div");
+                div.style.backgroundColor = "#4890D6";
+                div.style.color = "#FFFFFF";
+                div.style.textAlign = "center";
+                div.style.padding = "5px";
+                div.style.borderRadius = "5px";
+                div.style.fontSize = "16px";
+                div.style.position = "absolute";
+                div.style.top = "10px";
+                div.style.left = "40px";
+                div.innerHTML = "CUACE模型预报";
+                div.id = "graphicControl";
+
+                ol.control.Control.call(this, {
+                    element: div
+                });
+            }
+
+            if (Control) GraphicControl.__proto__ = Control;
+            GraphicControl.prototype = Object.create(Control && Control.prototype);
+            GraphicControl.prototype.constructor = GraphicControl;
+
+            return GraphicControl;
+        }(ol.control.Control));
+
+        var VisualMapControl = (function (Control) {
+            function VisualMapControl(opt_options) {
+                var img = document.createElement("img");
+                img.src = "http://218.75.139.117:8083/Content/images/visualMap.png";
+                img.style.position = "absolute";
+                img.style.bottom = "0px";
+                img.style.right = "0px";
+
+                ol.control.Control.call(this, {
+                    element: img
+                });
+            }
+
+            if (Control) VisualMapControl.__proto__ = Control;
+            VisualMapControl.prototype = Object.create(Control && Control.prototype);
+            VisualMapControl.prototype.constructor = VisualMapControl;
+
+            return VisualMapControl;
+        }(ol.control.Control));
+
+        var TypeSwitchMapControl = (function (Control) {
+            function TypeSwitchMapControl(opt_options) {
+                var button = document.createElement("button");
+                button.style.position = "absolute";
+                button.style.top = "10px";
+                button.style.right = "10px";
+                button.innerHTML = "切换";
+
+                ol.control.Control.call(this, {
+                    element: button
+                });
+
+                button.addEventListener('click', this.clickFunction.bind(this), false);
+            }
+
+            if (Control) TypeSwitchMapControl.__proto__ = Control;
+            TypeSwitchMapControl.prototype = Object.create(Control && Control.prototype);
+            TypeSwitchMapControl.prototype.constructor = TypeSwitchMapControl;
+
+            TypeSwitchMapControl.prototype.clickFunction = switchFunction;
+            return TypeSwitchMapControl;
+        }(ol.control.Control));
+
+        function switchFunction() {
+            itemIndex++;
+            if (itemIndex == items.length) {
+                itemIndex = 0;
+            }
+            item = items[itemIndex];
+            document.getElementById("graphicControl").innerHTML = "CUACE模型{0}预报<br />{1}".format(item, date.format("yyyy-MM-dd HH:00:00"));
+            setImage();
+        }
+
+        function setImage() {
+            url = 'https://graph.zq12369.cn/{0}/hour/CUACE_09km_{0}_station_{1}.png'.format(item, date.format("yyyy-MM-dd HH:00:00"));
+            if (imageLayer) {
+                map.removeLayer(imageLayer);
+            }
+            imageLayer = new ol.layer.Image({
+                source: new ol.source.ImageStatic({
+                    url: url,
+                    imageExtent: imageExtent
+                }),
+                opacity: 0.7
+            });
+            map.addLayer(imageLayer);
+        }
+
+        map = new ol.Map({
+            target: 'map',
+            controls: ol.control.defaults({
+                attributionOptions: {
+                    collapsible: false
+                }
+            }).extend([
+                new GraphicControl(), new VisualMapControl(), new TypeSwitchMapControl()
+            ]),
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat(center),
+                zoom: 4
+            })
+        });
+
+        switchFunction();
+    </script>
+</body>
+</html>

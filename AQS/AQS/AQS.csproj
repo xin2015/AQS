@@ -164,6 +164,8 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Map\Index.cshtml" />
+    <Content Include="Views\Map\CUACE.cshtml" />
+    <Content Include="Views\Map\CustomControls.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

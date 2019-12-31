@@ -8,10 +8,21 @@ namespace AQS.Controllers
 {
     public class MapController : Controller
     {
-        // GET: Map
+        #region OpenLayers
         public ActionResult Index()
         {
             return View();
         }
+
+        public ActionResult CUACE()
+        {
+            return View();
+        }
+
+        public ActionResult CustomControls()
+        {
+            return View();
+        }
+        #endregion
     }
 }

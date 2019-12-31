@@ -1,0 +1,89 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenLayers</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/css/ol.css" type="text/css">
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-family: "Microsoft YaHei";
+        }
+
+        .map {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/build/ol.js"></script>
+</head>
+<body>
+    <div id="map" class="map"></div>
+    <script type="text/javascript">
+        //
+        // Define rotate to north control.
+        //
+
+        var RotateNorthControl = (function (Control) {
+            function RotateNorthControl(opt_options) {
+                var options = opt_options || {};
+
+                var button = document.createElement('button');
+                button.innerHTML = 'N';
+
+                var element = document.createElement('div');
+                element.className = 'rotate-north ol-unselectable ol-control';
+                element.appendChild(button);
+
+                Control.call(this, {
+                    element: element,
+                    target: options.target
+                });
+
+                button.addEventListener('click', this.handleRotateNorth.bind(this), false);
+            }
+
+            if (Control) RotateNorthControl.__proto__ = Control;
+            RotateNorthControl.prototype = Object.create(Control && Control.prototype);
+            RotateNorthControl.prototype.constructor = RotateNorthControl;
+
+            RotateNorthControl.prototype.handleRotateNorth = function handleRotateNorth() {
+                this.getMap().getView().setRotation(0);
+            };
+
+            return RotateNorthControl;
+        }(ol.control.Control));
+
+
+        //
+        // Create map, giving it a rotate to north control.
+        //
+
+
+        var map = new ol.Map({
+            controls: ol.control.defaults().extend([
+                new RotateNorthControl()
+            ]),
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            target: 'map',
+            view: new ol.View({
+                center: [0, 0],
+                zoom: 3,
+                rotation: 1
+            })
+        });
+    </script>
+</body>
+</html>
