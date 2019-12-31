@@ -28,6 +28,11 @@ namespace AQS.Controllers
         {
             return View();
         }
+
+        public ActionResult AirQualityCityHourData()
+        {
+            return View();
+        }
         #endregion
         #region TianDiTu
         public ActionResult TianDiTu()
