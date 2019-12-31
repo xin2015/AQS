@@ -33,6 +33,21 @@ namespace AQS.Controllers
         {
             return View();
         }
+
+        public ActionResult Overlay()
+        {
+            return View();
+        }
+
+        public ActionResult Popup()
+        {
+            return View();
+        }
+
+        public ActionResult Icon()
+        {
+            return View();
+        }
         #endregion
         #region TianDiTu
         public ActionResult TianDiTu()

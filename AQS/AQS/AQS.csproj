@@ -201,6 +201,9 @@
     <Content Include="Views\Map\CustomControls.cshtml" />
     <Content Include="Views\Map\WMTSTianDiTu.cshtml" />
     <Content Include="Views\Map\AirQualityCityHourData.cshtml" />
+    <Content Include="Views\Map\Overlay.cshtml" />
+    <Content Include="Views\Map\Popup.cshtml" />
+    <Content Include="Views\Map\Icon.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

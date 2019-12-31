@@ -77,6 +77,17 @@
         var url = 'https://graph.zq12369.cn/{0}/hour/CUACE_09km_{0}_station_{1}.png'.format(item, date.format("yyyy-MM-dd HH:00:00"));
         var map;
         var imageLayer;
+        var projection = ol.proj.get('EPSG:3857');
+        var projectionExtent = projection.getExtent();
+        var size = ol.extent.getWidth(projectionExtent) / 256;
+        var maxZoom = 20;
+        var resolutions = new Array(maxZoom);
+        var matrixIds = new Array(maxZoom);
+        for (var z = 0; z < maxZoom; z++) {
+            // generate resolutions and matrixIds arrays for this WMTS
+            resolutions[z] = size / Math.pow(2, z);
+            matrixIds[z] = z;
+        }
 
         var GraphicControl = (function (Control) {
             function GraphicControl(opt_options) {
@@ -184,7 +195,36 @@
             ]),
             layers: [
                 new ol.layer.Tile({
-                    source: new ol.source.OSM()
+                    source: new ol.source.WMTS({
+                        name: "天地图全国矢量电子地图底图",
+                        url: "http://t0.tianditu.gov.cn/vec_w/wmts?tk=fdcab2d88e293c189daf038cd01592e6",
+                        layer: "vec",
+                        style: "default",
+                        matrixSet: "w",
+                        format: "tiles",
+                        wrapX: true,
+                        tileGrid: new ol.tilegrid.WMTS({
+                            origin: ol.extent.getTopLeft(projectionExtent),
+                            resolutions: resolutions.slice(1, 19),
+                            matrixIds: matrixIds.slice(1, 19)
+                        })
+                    })
+                }),
+                new ol.layer.Tile({
+                    source: new ol.source.WMTS({
+                        name: "天地图全国矢量电子地图注记",
+                        url: "http://t0.tianditu.gov.cn/cva_w/wmts?tk=fdcab2d88e293c189daf038cd01592e6",
+                        layer: "cva",
+                        style: "default",
+                        matrixSet: "w",
+                        format: "tiles",
+                        wrapX: true,
+                        tileGrid: new ol.tilegrid.WMTS({
+                            origin: ol.extent.getTopLeft(projectionExtent),
+                            resolutions: resolutions.slice(1, 19),
+                            matrixIds: matrixIds.slice(1, 19)
+                        })
+                    })
                 })
             ],
             view: new ol.View({
